@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package FullCalculator;
 
 import java.util.*;
 import javax.swing.*;
@@ -13,7 +12,7 @@ import java.awt.event.*;
 
 /**
  *
- * @author LJY
+ * @author Junyu Lu
  */
 class GUI extends JFrame {
 
@@ -40,7 +39,7 @@ class GUI extends JFrame {
         label = new JLabel();
         label.setText("write your expressions here");
         text = new JTextField(30);
-        text.setText("( 2 + 9 ) ^ 2 * 3");
+        text.setText("( 8 + 9 ) ^ 2 * 3");
         button = new JButton("Calculate");
         button.addActionListener(new ButtonListener());
         panel.add(label);
@@ -48,14 +47,76 @@ class GUI extends JFrame {
         panel.add(button);
     }
 
+    public static String InputManipulation(String raw){
+        String noSpace="";
+
+        //get rid of any spaces
+
+        for (int i=0;i<raw.length();i++){
+            if (raw.charAt(i)!=' '){
+                noSpace+=raw.charAt(i);
+                }
+            }
+
+        //now add a space between any numbers and operators
+        String goal="";
+        for(int i=0;i<goal.length();i++){
+                goal+=noSpace.charAt(i);
+                boolean addSpace=true;
+                //6.          45     .9
+                if (Character.isDigit(noSpace.charAt(i))||noSpace.charAt(i)=='.')
+                   if (i<goal.length()-1 && (Character.isDigit(noSpace.charAt(i)))||(noSpace.charAt(i+1)=='.')){
+                        addSpace=false;
+                       }
+                if (addSpace)
+                    goal+=' ';
+
+            }
+
+
+        return goal;
+        }
+
     private class ButtonListener implements ActionListener {
+
+
 
         public void actionPerformed(ActionEvent e) {
 
             String input = text.getText();
-            // The original input
+
+
+            // error check below
+            boolean leastOneDigit=false;
+            for(int i=0;i<input.length();i++){
+                    char a=input.charAt(i);
+                    if(!Character.isDigit(a)&&a!='+'&&a!='-'&&a!='*'&&a!='/'&&a!='^'&& a!='(' &&a!=')'&& a!=' '&&a!='.'){
+                        JOptionPane.showMessageDialog(null,"The character "+ a + " is invailable");
+                        return;
+                        }
+                    ///////////////////////////////////////////////////////////////////////
+                    if(i>=1 && a==0 && input.charAt(i-1)=='/'){
+                        JOptionPane.showMessageDialog(null,"0 can't be the divisor!");
+                        }
+                    ///////////////////////////////////////////////////////////////////////
+
+                    if(Character.isDigit(a)){
+                        leastOneDigit=true;
+                        }
+                }
+            if (!leastOneDigit){
+                JOptionPane.showMessageDialog(null,"At least one number in the expression!");
+                return;
+                }
+
+            //remove any spaces
+
+            String modifiedInput;
+            modifiedInput=inputManipulation(input);
             FullCalculator calc = new FullCalculator();
-            calc.processInput(input);
+            calc.processInput(modifiedInput);
+
+
         }
     }
 }
@@ -154,6 +215,8 @@ class Token {
                 break;
             case '^':
                 result = Math.pow(a, b);
+                break;
+
         }
         return new Token(result);
     }
@@ -232,7 +295,7 @@ class FullCalculator {
 
     public void processInput(String input) {
         // The tokens that make up the input
-        String[] parts = input.split("");
+        String[] parts = input.split(" ");
         Token[] tokens = new Token[parts.length];
         for (int n = 0; n < parts.length; n++) {
             tokens[n] = new Token(parts[n]);
