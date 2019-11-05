@@ -1,3 +1,4 @@
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -15,7 +16,6 @@ import java.awt.event.*;
  * @author Junyu Lu
  */
 class GUI extends JFrame {
-
     private JPanel panel;
     private JLabel label;
     private JButton button;
@@ -24,14 +24,12 @@ class GUI extends JFrame {
     //constructor
     public GUI() {
         setTitle("Calculator");
-
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(400, 200);
         buildPanel();
         add(panel);
         setVisible(true);
     }
-
     //build the panel and components
     public void buildPanel() {
         panel = new JPanel();
@@ -39,53 +37,45 @@ class GUI extends JFrame {
         label = new JLabel();
         label.setText("write your expressions here");
         text = new JTextField(30);
-        text.setText("( 8 + 9 ) ^ 2 * 3");
+        text.setText("(1.2   +2.3   )*3.85   ^4.5");
         button = new JButton("Calculate");
         button.addActionListener(new ButtonListener());
         panel.add(label);
         panel.add(text);
         panel.add(button);
     }
-
-    public static String InputManipulation(String raw){
+// adjust any format of the expression to the correct ones with " " between each number and operators
+    public static String inputManipulation(String raw){
         String noSpace="";
-
         //get rid of any spaces
-
         for (int i=0;i<raw.length();i++){
             if (raw.charAt(i)!=' '){
                 noSpace+=raw.charAt(i);
                 }
             }
-
+ 
         //now add a space between any numbers and operators
         String goal="";
-        for(int i=0;i<goal.length();i++){
+        for(int i=0;i<noSpace.length();i++){
                 goal+=noSpace.charAt(i);
                 boolean addSpace=true;
                 //6.          45     .9
-                if (Character.isDigit(noSpace.charAt(i))||noSpace.charAt(i)=='.')
-                   if (i<goal.length()-1 && (Character.isDigit(noSpace.charAt(i)))||(noSpace.charAt(i+1)=='.')){
+                if(i<noSpace.length()-1)
+                if (Character.isDigit(noSpace.charAt(i))||noSpace.charAt(i)=='.'){
+                   if ( (Character.isDigit(noSpace.charAt(i+1)))||(noSpace.charAt(i+1)=='.')){
                         addSpace=false;
                        }
+                }
                 if (addSpace)
-                    goal+=' ';
-
+                      goal+=' ';
             }
-
-
+        
         return goal;
         }
 
     private class ButtonListener implements ActionListener {
-
-
-
         public void actionPerformed(ActionEvent e) {
-
             String input = text.getText();
-
-
             // error check below
             boolean leastOneDigit=false;
             for(int i=0;i<input.length();i++){
@@ -99,7 +89,6 @@ class GUI extends JFrame {
                         JOptionPane.showMessageDialog(null,"0 can't be the divisor!");
                         }
                     ///////////////////////////////////////////////////////////////////////
-
                     if(Character.isDigit(a)){
                         leastOneDigit=true;
                         }
@@ -108,15 +97,11 @@ class GUI extends JFrame {
                 JOptionPane.showMessageDialog(null,"At least one number in the expression!");
                 return;
                 }
-
-            //remove any spaces
-
             String modifiedInput;
             modifiedInput=inputManipulation(input);
+         
             FullCalculator calc = new FullCalculator();
             calc.processInput(modifiedInput);
-
-
         }
     }
 }
